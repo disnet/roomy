@@ -11,6 +11,7 @@
   import {
     IconCalendar,
     IconCheck,
+    IconCheckSquare,
     IconHome,
     IconHashtag,
     IconGripVertical,
@@ -221,6 +222,16 @@
           Events
         </Button>
       {/if}
+
+      <Button
+        class="w-full justify-start mb-2"
+        variant="ghost"
+        href={`/${page.params.space}/todos`}
+        data-current={page.url.pathname == `/${page.params.space}/todos`}
+      >
+        <IconCheckSquare class="shrink-0" />
+        Todos
+      </Button>
 
       <hr class="my-2 border-base-800/10 dark:border-base-100/5" />
     {/if}

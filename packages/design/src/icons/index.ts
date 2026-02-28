@@ -27,6 +27,7 @@ export { default as IconX } from "~icons/tabler/x"
 export { default as IconXMark } from "~icons/heroicons/x-mark"
 
 // Content types
+export { default as IconCheckSquare } from "~icons/lucide/square-check-big"
 export { default as IconCalendar } from "~icons/heroicons/calendar"
 export { default as IconDocument } from "~icons/heroicons/document"
 export { default as IconHashtag } from "~icons/heroicons/hashtag"

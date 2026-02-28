@@ -58,6 +58,10 @@
   import { Event, newUlid, toBytes, Ulid } from "@roomy/sdk";
   import { page } from "$app/state";
   import { cdnImageUrl } from "$lib/utils.svelte";
+  import { getTodoStore } from "$lib/stores/todoStore.svelte";
+  import { IconCheckSquare } from "@roomy/design/icons";
+
+  const todoStore = getTodoStore();
 
   let {
     message,
@@ -123,6 +127,8 @@
 
   let isFromDiscord = $derived(message.isBridged);
 
+  let linkedTodo = $derived(todoStore.todosByMessageId.get(message.id));
+
   function editMessage() {
     onStartEdit(message.id);
   }
@@ -157,7 +163,7 @@
 {#snippet messageBox()}
   <div
     class={[
-      `relative group w-full flex flex-col px-2 rounded ${isSelected ? "bg-accent-100/50 dark:bg-accent-900/50 hover:bg-accent-100/75 dark:hover:bg-accent-900/75" : " hover:bg-base-100/50  dark:hover:bg-base-400/5"}`,
+      `relative group w-full flex flex-col px-2 rounded ${isSelected ? "bg-accent-100/50 dark:bg-accent-900/50 hover:bg-accent-100/75 dark:hover:bg-accent-900/75" : linkedTodo ? "bg-accent-50/60 dark:bg-accent-950/30 hover:bg-accent-100/70 dark:hover:bg-accent-900/30 border-l-2 border-accent-400 dark:border-accent-600" : " hover:bg-base-100/50  dark:hover:bg-base-400/5"}`,
       message.mergeWithPrevious ? "mt-1" : "mt-5 pt-1",
     ]}
   >
@@ -290,6 +296,16 @@
                 Edited {@render timestamp(userAccessTimes.current?.updatedAt)}
               </div>
             {/if} -->
+          {/if}
+
+          {#if linkedTodo}
+            <a
+              href={`/${page.params.space}/todos#${linkedTodo.id}`}
+              class="inline-flex items-center gap-1 text-[11px] text-accent-600 dark:text-accent-400 hover:underline mt-1"
+            >
+              <IconCheckSquare class="size-3" />
+              {linkedTodo.completed ? "Completed todo" : "Open todo"}
+            </a>
           {/if}
         </div>
 

@@ -13,9 +13,12 @@
     IconNeedleThread,
     IconEdit,
     IconTrash,
+    IconCheckSquare,
   } from "@roomy/design/icons";
   import { peerStatus } from "$lib/workers";
   import { getAppState } from "$lib/queries";
+  import { page } from "$app/state";
+  import { getTodoStore } from "$lib/stores/todoStore.svelte";
   const app = getAppState();
   import { addReaction, removeReaction } from "$lib/mutations/reaction";
   import { deleteMessage } from "$lib/mutations/message";
@@ -44,6 +47,25 @@
       peerStatus.authState.state === "authenticated" &&
       (app.isSpaceAdmin || message.authorDid == peerStatus.authState.did),
   );
+
+  const todoStore = getTodoStore();
+
+  async function addAsTodo() {
+    const spaceId = page.params.space;
+    if (!spaceId || !message.content) return;
+    const createdBy = peerStatus.authState?.state === "authenticated"
+      ? { did: peerStatus.authState.did, name: peerStatus.profile?.displayName, avatar: peerStatus.profile?.avatar }
+      : undefined;
+    await todoStore.load(spaceId);
+    await todoStore.addTodo(spaceId, message.content, {
+      source: {
+        type: "message",
+        roomId: app.roomId!,
+        messageId: message.id,
+      },
+      createdBy,
+    });
+  }
 
   async function deleteCurrentMessage() {
     const spaceId = app.joinedSpace?.id;
@@ -143,6 +165,19 @@
         </Toolbar.Button>
       </Tooltip>
     {/if}
+
+    <Tooltip tip="Add to Todos">
+      <Toolbar.Button
+        onclick={addAsTodo}
+        class={[
+          buttonVariants({ variant: "ghost", size: "iconSm" }),
+          "backdrop-blur-none",
+        ]}
+        aria-label="Add to Todos"
+      >
+        <IconCheckSquare class="text-primary" />
+      </Toolbar.Button>
+    </Tooltip>
 
     <Tooltip tip="Create Thread">
       <Toolbar.Button
